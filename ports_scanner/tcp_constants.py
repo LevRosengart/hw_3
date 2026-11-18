@@ -1,0 +1,9 @@
+BASIC_TCP_HEADER_LEN: int = 20
+SACK_KIND: int = 4
+MSS_KIND: int = 2
+SACK_LEN: int = 2
+MSS_LEN: int = 4
+NOP: int = 1
+
+DEFAULT_WINDOW_SIZE: int = 2**14
+MAX_PACKET_SIZE: int = 2**16 - 1
