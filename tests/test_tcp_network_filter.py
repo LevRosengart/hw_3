@@ -3,7 +3,7 @@ from struct import Struct
 
 import pytest
 
-from ports_scanner.tcp_network_filter import TcpNetworkFilter
+from portscan.tcp_network_filter import TcpNetworkFilter
 
 
 class TestTcpNetworkFilter:
@@ -47,7 +47,9 @@ class TestTcpNetworkFilter:
         )
 
     @pytest.fixture
-    def create_segment(self, segment_data: bytes, fmt: str, offset: int, replacement: int) -> bytes:
+    def create_segment(
+        self, segment_data: bytes, fmt: str, offset: int, replacement: int
+    ) -> bytes:
         segment = bytearray(segment_data)
         Struct(fmt).pack_into(segment, offset, replacement)
         return bytes(segment)
@@ -77,9 +79,13 @@ class TestTcpNetworkFilter:
                 True,
                 id="valid-rst-ack-true",
             ),
-            pytest.param(RST_SEGMENT, "!I", 4, EXPECTED_ACK, True, id="valid-rst-incremented-seq"),
+            pytest.param(
+                RST_SEGMENT, "!I", 4, EXPECTED_ACK, True, id="valid-rst-incremented-seq"
+            ),
             pytest.param(RST_SEGMENT, "!I", 4, 0, True, id="valid-rst-zero-seq"),
-            pytest.param(RST_SEGMENT, "!I", 4, SENT_SEQ - 1, False, id="invalid-rst-seq"),
+            pytest.param(
+                RST_SEGMENT, "!I", 4, SENT_SEQ - 1, False, id="invalid-rst-seq"
+            ),
             pytest.param(
                 EXPECTED_SYN_ACK_SEGMENT,
                 "!H",
@@ -98,7 +104,9 @@ class TestTcpNetworkFilter:
             ),
         ],
     )
-    def test_is_valid_segment(self, create_segment: bytes, expected_result: bool) -> None:
+    def test_is_valid_segment(
+        self, create_segment: bytes, expected_result: bool
+    ) -> None:
         assert (
             self.filter.is_valid_tcp_response(
                 create_segment, self.EXPECTED_RESP_SOURCE_IP, self.SENT_SEQ
@@ -107,7 +115,14 @@ class TestTcpNetworkFilter:
         )
 
     @pytest.mark.parametrize(
-        ("segment_data", "fmt", "offset", "replacement", "expected_is_rst", "expected_is_ack"),
+        (
+            "segment_data",
+            "fmt",
+            "offset",
+            "replacement",
+            "expected_is_rst",
+            "expected_is_ack",
+        ),
         [
             pytest.param(
                 EXPECTED_SYN_ACK_SEGMENT,

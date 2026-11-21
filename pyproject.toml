@@ -1,5 +1,5 @@
 [project]
-name = "hw-3"
+name = "portscan"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,10 +7,13 @@ authors = [
     { name = "LevRosengart", email = "levkonst2007@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "dnspython>=2.9.2",
+    "pytest-mock>=3.17.0",
+]
 
 [project.scripts]
-hw-3 = "hw_3:main"
+portscan = "portscan.__main__:main"
 
 [build-system]
 requires = ["uv_build>=0.13.5,<0.14.0"]

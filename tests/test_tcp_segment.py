@@ -4,8 +4,8 @@ from struct import Struct
 
 import pytest
 
-from ports_scanner.tcp_constants import DEFAULT_WINDOW_SIZE
-from ports_scanner.tcp_segment import TcpSegment
+from portscan.constants import DEFAULT_WINDOW_SIZE
+from portscan.tcp_segment import TcpSegment
 
 
 class TestTcpSegment:
@@ -59,13 +59,19 @@ class TestTcpSegment:
         # |        Acknowledgement number: 00 00 00 00      |
         # |   HLen: 5 |000|000000010| Window size: 40 00    |
         # |   Null checksum: 00 00  | Urgent pointer: 00 00 |
-        source_port: bytes = segment.client_port.to_bytes(2, byteorder="big")  # b"\x04\x00"
-        dest_port: bytes = segment.server_port.to_bytes(2, byteorder="big")  # b"\x00\x50"
+        source_port: bytes = segment.client_port.to_bytes(
+            2, byteorder="big"
+        )  # b"\x04\x00"
+        dest_port: bytes = segment.server_port.to_bytes(
+            2, byteorder="big"
+        )  # b"\x00\x50"
         seq_num: bytes = segment.seq_num.to_bytes(4, byteorder="big")
         ack_num: bytes = b"\x00" * 4
         binary_length_flags: int = 0b0101_0000_0000_0010
         header_length_flags: bytes = binary_length_flags.to_bytes(2, byteorder="big")
-        window_size: bytes = DEFAULT_WINDOW_SIZE.to_bytes(2, byteorder="big")  # b"\x40\x00"
+        window_size: bytes = DEFAULT_WINDOW_SIZE.to_bytes(
+            2, byteorder="big"
+        )  # b"\x40\x00"
         # assert int.from_bytes(window_size, byteorder="big") == segment._window_size
         null_checksum: bytes = b"\x00\x00"
         urg_pointer: bytes = b"\x00\x00"
@@ -102,7 +108,9 @@ class TestTcpSegment:
             client_ip: str = self.generate_random_ip()
             server_port: int = random.randint(min_port_num, max_port_num)
             client_port: int = random.randint(min_port_num, max_port_num)
-            segment: TcpSegment = TcpSegment(server_port, client_port, server_ip, client_ip)
+            segment: TcpSegment = TcpSegment(
+                server_port, client_port, server_ip, client_ip
+            )
             assert min_expected_checksum <= segment.checksum <= max_expected_checksum
 
     def test_checksum(self) -> None:
@@ -111,17 +119,23 @@ class TestTcpSegment:
             client_ip: str = self.generate_random_ip()
             server_port: int = random.randint(self.MIN_PORT_NUM, self.MAX_PORT_NUM)
             client_port: int = random.randint(self.MIN_PORT_NUM, self.MAX_PORT_NUM)
-            segment: TcpSegment = TcpSegment(server_port, client_port, server_ip, client_ip)
+            segment: TcpSegment = TcpSegment(
+                server_port, client_port, server_ip, client_ip
+            )
             null_checksum_field_segment: bytearray = bytearray(
                 segment.tcp_syn_segment_without_checksum
             )
             checksum: int = TcpSegment.calculate_checksum(null_checksum_field_segment)
             Struct("!H").pack_into(null_checksum_field_segment, 16, checksum)
-            new_checksum: int = TcpSegment.calculate_checksum(bytes(null_checksum_field_segment))
+            new_checksum: int = TcpSegment.calculate_checksum(
+                bytes(null_checksum_field_segment)
+            )
             assert new_checksum == 0
 
     def test_tcp_syn_segment(self, segment: TcpSegment) -> None:
-        expected_tcp_segment: bytearray = bytearray(segment.tcp_syn_segment_without_checksum)
+        expected_tcp_segment: bytearray = bytearray(
+            segment.tcp_syn_segment_without_checksum
+        )
         checksum: int = segment.checksum
         Struct("!H").pack_into(expected_tcp_segment, 16, checksum)
         assert bytes(expected_tcp_segment) == segment.tcp_syn_segment

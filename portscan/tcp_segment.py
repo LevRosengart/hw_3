@@ -2,7 +2,7 @@ import random
 import socket
 from struct import Struct
 
-from ports_scanner.tcp_constants import (
+from portscan.constants import (
     BASIC_TCP_HEADER_LEN,
     DEFAULT_WINDOW_SIZE,
     MSS_KIND,
@@ -151,7 +151,14 @@ class TcpSegment:
     def tcp_syn_segment(self) -> bytes:
         if self._tcp_syn_segment is not None:
             return self._tcp_syn_segment
-        null_checksum_segment: bytearray = bytearray(self.tcp_syn_segment_without_checksum)
+        null_checksum_segment: bytearray = bytearray(
+            self.tcp_syn_segment_without_checksum
+        )
         Struct("!H").pack_into(null_checksum_segment, 16, self.checksum)
         self._tcp_syn_segment = bytes(null_checksum_segment)
         return self._tcp_syn_segment
+
+    @staticmethod
+    def get_ports_from_raw_segment(segment: bytes) -> tuple[int, int]:
+        source_port, dest_port = Struct("!HH").unpack_from(segment, 0)
+        return source_port, dest_port

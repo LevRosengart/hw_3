@@ -11,7 +11,9 @@ class TcpNetworkFilter:
         self._resp_source_ip: str = client_dest_ip
         self._resp_source_port: int = client_dest_port
 
-    def is_valid_tcp_response(self, segment: bytes, server_ip: str, sent_seq_num: int) -> bool:
+    def is_valid_tcp_response(
+        self, segment: bytes, server_ip: str, sent_seq_num: int
+    ) -> bool:
         if not self._is_valid_tcp_response_dest(segment, server_ip):
             return False
         if self.is_ack_in_segment(segment):
